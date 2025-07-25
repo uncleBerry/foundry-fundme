@@ -9,7 +9,6 @@ error OnlyOwner();
 error TransferFailed();
 
 contract FundMe {
-    
     AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
 
     uint256 public constant MINIMUM_USD = 5e18;
@@ -22,35 +21,34 @@ contract FundMe {
 
     mapping(address funder => uint256 amount) public addressAmountFunded;
 
-    address immutable public i_owner;
+    address public immutable i_owner;
 
-    constructor () {
+    constructor() {
         i_owner = msg.sender;
     }
 
     modifier _onlyowner() {
-        if(msg.sender != i_owner) {revert OnlyOwner();} 
+        if (msg.sender != i_owner) revert OnlyOwner();
         _;
     }
 
     function fund() public payable {
-        if(PriceConverter.getConversionRate(priceFeed, msg.value) < MINIMUM_USD){
+        if (PriceConverter.getConversionRate(priceFeed, msg.value) < MINIMUM_USD) {
             revert NotEnoughFunds();
         }
         funders.push(msg.sender); //
         addressAmountFunded[msg.sender] += msg.value;
     }
 
-    function withdraw() public _onlyowner{
-        for(uint256 indexArray = 0; indexArray < funders.length; indexArray++) {
+    function withdraw() public _onlyowner {
+        for (uint256 indexArray = 0; indexArray < funders.length; indexArray++) {
             address funder = funders[indexArray];
             addressAmountFunded[funder] = 0;
         }
-        funders = new address[] (0);
+        funders = new address[](0);
 
-        ( bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
-        if(!success){revert TransferFailed();}
-
+        (bool success,) = payable(msg.sender).call{value: address(this).balance}("");
+        if (!success) revert TransferFailed();
     }
 
     function getDecimals() public view returns (uint256) {
@@ -61,6 +59,11 @@ contract FundMe {
         return priceFeed.version();
     }
 
-    fallback() external payable { fund();}
-    receive() external payable { fund();}
+    fallback() external payable {
+        fund();
+    }
+
+    receive() external payable {
+        fund();
+    }
 }
