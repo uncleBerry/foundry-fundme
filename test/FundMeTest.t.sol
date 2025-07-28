@@ -2,16 +2,21 @@
 pragma solidity ^0.8.10;
 
 import {Test, console} from "forge-std/Test.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 import {FundMe} from "../src/FundMe.sol";
 
 error NotEnoughFunds();
 
 contract FundMeTest is Test {
+
+    DeployFundMe deployFundMe;
+
     FundMe public fundMe;
 
     // Function untuk membuat instance contract FundMe
     function setUp() public {
-        fundMe = new FundMe();
+        deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
     }
 
     // Function untuk tes nilai varaible MINIMUM_USD sama dengan 5e18/5 USD
@@ -22,8 +27,7 @@ contract FundMeTest is Test {
 
     // Function untuk tes apakah owner (pemiliki contract)
     function testOwnerIsMsgSender() public view {
-        assertEq(fundMe.i_owner(), address(this));
-        console.log(fundMe.i_owner());
+        assertEq(fundMe.i_owner(), msg.sender);
     }
 
     // Function untuk test atau memastikan versi priceFeed sama dengan 4
@@ -58,10 +62,21 @@ contract FundMeTest is Test {
         assertEq(fundMe.fundersLength(), 0);
     }
 
-    //     function testWithdrawOnlyOwner() public {
-    //       address userAccount = address(this);
-    //       vm.prank(userAccount);
-    //       fundMe.withdraw();
-    //       assertEq(fundMe.i_owner(), userAccount);
-    //     }
+        function testWithdrawOnlyOwner() public {
+          address userAccount = msg.sender;
+          vm.prank(userAccount);
+          fundMe.withdraw();
+          assertEq(fundMe.i_owner(), userAccount);
+        }
+
+        function testWithDrawOtherPeople() public {
+            address userAccount = address(this);
+            vm.prank(userAccount);
+            fundMe.fund{value: 1 ether}();
+
+            vm.expectRevert();
+            fundMe.withdraw();
+            console.log(userAccount);
+            console.log(msg.sender);
+        }
 }

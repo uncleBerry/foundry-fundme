@@ -9,7 +9,10 @@ error OnlyOwner();
 error TransferFailed();
 
 contract FundMe {
-    AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+    
+    AggregatorV3Interface private s_priceFeed;
+
+    // AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
 
     uint256 public constant MINIMUM_USD = 5e18;
 
@@ -23,8 +26,9 @@ contract FundMe {
 
     address public immutable i_owner;
 
-    constructor() {
+    constructor(address priceFeed) {
         i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
     modifier _onlyowner() {
@@ -33,7 +37,7 @@ contract FundMe {
     }
 
     function fund() public payable {
-        if (PriceConverter.getConversionRate(priceFeed, msg.value) < MINIMUM_USD) {
+        if (PriceConverter.getConversionRate(s_priceFeed, msg.value) < MINIMUM_USD) {
             revert NotEnoughFunds();
         }
         funders.push(msg.sender); //
@@ -52,11 +56,11 @@ contract FundMe {
     }
 
     function getDecimals() public view returns (uint256) {
-        return priceFeed.decimals();
+        return s_priceFeed.decimals();
     }
 
     function getVersion() public view returns (uint256) {
-        return priceFeed.version();
+        return s_priceFeed.version();
     }
 
     fallback() external payable {

@@ -7,7 +7,8 @@ import {FundMe} from "../src/FundMe.sol";
 contract DeployFundMe is Script {
     function run() external returns (FundMe) {
         vm.startBroadcast(); // Memulai broadcast transaksi
-        FundMe fundMe = new FundMe(); // Membuat instance dari kontrak FundMe
+        address PriceFeed = vm.envAddress("SEPOLIA_PRICE_FEED");
+        FundMe fundMe = new FundMe(PriceFeed); // Membuat instance dari kontrak FundMe
         vm.stopBroadcast(); // Mengakhiri broadcast
         return fundMe;
     }
