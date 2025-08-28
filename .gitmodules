@@ -7,3 +7,6 @@
 [submodule "lib/chainlink"]
 	path = lib/chainlink
 	url = https://github.com/smartcontractkit/chainlink
+[submodule "lib/foundry-Devops"]
+	path = lib/foundry-Devops
+	url = https://github.com/ChainAccelOrg/foundry-Devops

@@ -3,13 +3,18 @@ pragma solidity ^0.8.10;
 
 import {Script} from "forge-std/Script.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployFundMe is Script {
+    HelperConfig helperConfig = new HelperConfig();
+    
+
     function run() external returns (FundMe) {
-        vm.startBroadcast(); // Memulai broadcast transaksi
-        address PriceFeed = vm.envAddress("SEPOLIA_PRICE_FEED");
-        FundMe fundMe = new FundMe(PriceFeed); // Membuat instance dari kontrak FundMe
-        vm.stopBroadcast(); // Mengakhiri broadcast
+        vm.startBroadcast();
+
+        FundMe fundMe = new FundMe(helperConfig.activeNetworkConfig());
+
+        vm.stopBroadcast();
         return fundMe;
     }
 }
