@@ -24,7 +24,7 @@ contract FundMeTest is Test {
 
     // Function untuk tes nilai varaible MINIMUM_USD sama dengan 5e18/5 USD
     function testMinimumFiveUSD() public view {
-        assertEq(fundMe.MINIMUM_USD(), 5e18,"Not Enough Eth!"); // Apakah varaible MINIMUM_USD sama dengan 5e18/5 USD
+        assertEq(fundMe.MINIMUM_USD(), 5e18, "Not Enough Eth!"); // Apakah varaible MINIMUM_USD sama dengan 5e18/5 USD
     }
 
     // Function untuk tes apakah owner (pemiliki contract)
@@ -82,7 +82,7 @@ contract FundMeTest is Test {
     }
 
     function testWithDrawOtherPeople() public {
-        address Marlon = makeAddr("Marlon"); //membuat address buatan 
+        address Marlon = makeAddr("Marlon"); //membuat address buatan
 
         vm.expectRevert(); //kita prediksi kalo transaksi ini akan gagal
         vm.prank(Marlon); //kita jadikan marlon yang memangil function withdraw()
@@ -128,12 +128,10 @@ contract FundMeTest is Test {
         vm.expectRevert();
         fundMe.withdraw();
         vm.stopPrank();
-        
     }
 
     //Mengetes Withdraw oleh Owner (Single Funder) use method AAA
     function testWithdrawFromASingleFunder() public {
-
         // Arrange atau mengatur
         uint256 startingFundMeBalance = address(fundMe).balance;
         uint256 startingOwnerBalance = fundMe.getOwner().balance;
@@ -153,55 +151,52 @@ contract FundMeTest is Test {
     function test_WithdrawFromMultipleFunders() public {
         uint160 funderGrup = 100;
 
-        for(uint160 i = 1; i < funderGrup; i++) {
+        for (uint160 i = 1; i < funderGrup; i++) {
             hoax(address(i), SEND_VALUE);
             fundMe.fund{value: SEND_VALUE}();
         }
 
-       uint256 startingFundMeBlanace = address(fundMe).balance;
-       uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBlanace = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
 
-       vm.startPrank(fundMe.getOwner());
-       fundMe.withdraw();
-       vm.stopPrank();
+        vm.startPrank(fundMe.getOwner());
+        fundMe.withdraw();
+        vm.stopPrank();
 
-       assert(address(fundMe).balance == 0);
-       assert(startingFundMeBlanace + startingOwnerBalance == fundMe.getOwner().balance);
-
+        assert(address(fundMe).balance == 0);
+        assert(startingFundMeBlanace + startingOwnerBalance == fundMe.getOwner().balance);
     }
 
     function test_CheeperWithdrawFromMultipleFunders() public {
         uint160 funderGrup = 100;
 
-        for(uint160 i = 1; i < funderGrup; i++) {
+        for (uint160 i = 1; i < funderGrup; i++) {
             hoax(address(i), SEND_VALUE);
             fundMe.fund{value: SEND_VALUE}();
         }
 
-       uint256 startingFundMeBlanace = address(fundMe).balance;
-       uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBlanace = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
 
-       vm.startPrank(fundMe.getOwner());
-       fundMe.withdrawCheeper();
-       vm.stopPrank();
+        vm.startPrank(fundMe.getOwner());
+        fundMe.withdrawCheeper();
+        vm.stopPrank();
 
-       assert(address(fundMe).balance == 0);
-       assert(startingFundMeBlanace + startingOwnerBalance == fundMe.getOwner().balance);
-
+        assert(address(fundMe).balance == 0);
+        assert(startingFundMeBlanace + startingOwnerBalance == fundMe.getOwner().balance);
     }
 
-    function test_GetOwnerAddress() public view{
+    function test_GetOwnerAddress() public view {
         address ownerAddress = fundMe.getOwner();
-        assertEq(ownerAddress, msg.sender);   
+        assertEq(ownerAddress, msg.sender);
     }
 
-   function testViewStorageSlot() public view {
-    for(uint256 i = 0; i < 4; i++){
-        bytes32 value = vm.load(address(fundMe), bytes32(i));
-        console.log("The slot is", i);
-        console.logBytes32(value);
+    function testViewStorageSlot() public view {
+        for (uint256 i = 0; i < 4; i++) {
+            bytes32 value = vm.load(address(fundMe), bytes32(i));
+            console.log("The slot is", i);
+            console.logBytes32(value);
+        }
+        console.log("PriceFeed address :", address(fundMe.getPriceFeedAddress()));
     }
-    console.log("PriceFeed address :", address(fundMe.getPriceFeedAddress()));
-   }
-    
 }

@@ -52,7 +52,7 @@ contract HelperConfigTest is Test {
     }
 
     function testViewSlotStorage() public view {
-        for(uint256 i = 0; i < 5; i++){
+        for (uint256 i = 0; i < 5; i++) {
             bytes32 value = vm.load(address(this), bytes32(i));
             console.log("Value at slot:", i);
             console.logBytes32(value);

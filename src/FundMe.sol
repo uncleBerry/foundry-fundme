@@ -9,11 +9,10 @@ error OnlyOwner();
 error TransferFailed();
 
 contract FundMe {
-
     //=================
     // STATE VARIABLES
     //=================
-    
+
     uint256 public constant MINIMUM_USD = 5e18;
     AggregatorV3Interface private s_priceFeed;
     address[] private s_funders;
@@ -60,7 +59,7 @@ contract FundMe {
         return s_priceFeed.version();
     }
 
-    function getOwner() public view returns (address){
+    function getOwner() public view returns (address) {
         return i_owner;
     }
 
@@ -78,9 +77,10 @@ contract FundMe {
     //=================
     // OWNER FUNCTIONS
     //=================
-    function withdrawCheeper() public _onlyowner {  
+
+    function withdrawCheeper() public _onlyowner {
         uint256 funder = s_funders.length;
-        for(uint256 indexArray = 1; indexArray < funder; indexArray++) {
+        for (uint256 indexArray = 1; indexArray < funder; indexArray++) {
             address funders = s_funders[indexArray];
             s_addressAmountFunded[funders] = 0;
         }
@@ -90,8 +90,8 @@ contract FundMe {
         if (!success) revert TransferFailed();
     }
 
-     function withdraw() public _onlyowner {  
-        for(uint256 indexArray = 1; indexArray < s_funders.length; indexArray++) {
+    function withdraw() public _onlyowner {
+        for (uint256 indexArray = 1; indexArray < s_funders.length; indexArray++) {
             address funder = s_funders[indexArray];
             s_addressAmountFunded[funder] = 0;
         }
@@ -103,6 +103,7 @@ contract FundMe {
     //=================
     // FALLBACK & RCIEVE
     //=================
+
     fallback() external payable {
         fund();
     }

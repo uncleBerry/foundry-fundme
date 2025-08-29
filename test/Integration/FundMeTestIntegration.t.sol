@@ -7,7 +7,6 @@ import {FundMe} from "../../src/FundMe.sol";
 import {FundFundMe, WithdrawFundMe} from "../../script/InteractionScript.s.sol";
 
 contract IntergartionTest is Test {
-
     uint256 constant SEND_VALUE = 0.1 ether;
     uint256 constant STARTING_USER_BALANCE = 10 ether;
     FundMe fundMe;
@@ -35,8 +34,5 @@ contract IntergartionTest is Test {
         assert(address(fundMe).balance == 0);
         assertEq(afterUserBalance + SEND_VALUE, preUserBalance);
         assertEq(preOwnerBalance + SEND_VALUE, afterOwnerBalance);
-
-
     }
-
 }
